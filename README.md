@@ -6,6 +6,8 @@ This is a module that shows the current song playing and its primary artist on S
 
 This module requires python 3.x.
 
+[![sample screenshot](https://i.imgur.com/kEluTSq.png)](https://i.imgur.com/kEluTSq.png)
+
 ### Settings
 ~~~ ini
 [module/spotify]
