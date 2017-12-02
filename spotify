@@ -18,7 +18,7 @@ try:
     if len(song) > trunclen:
         song = song[0:trunclen]
         song += '...' 
-        if '(' in song:
+        if ('(' in song) and (')' not in song):
             song += ')'
 
     output = artist + ': ' + song
