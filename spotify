@@ -24,4 +24,4 @@ try:
     output = artist + ': ' + song
     print(output)
 except:
-    pass
+    print("")
