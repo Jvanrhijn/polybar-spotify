@@ -15,6 +15,10 @@ type = custom/script
 interval = 1
 format-prefix = " "
 format = <label>
-exec = /path/to/spotify/script
+exec = python /path/to/spotify/script -t 42
 
 format-underline = #1db954
+~~~
+
+The argument "-t" is optional and sets the `trunlen`. 
+ 
