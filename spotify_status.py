@@ -31,4 +31,4 @@ try:
     output = artist + ': ' + song
     print(output.encode('utf-8'))
 except Exception as e:
-    print(e)
+    print("")
