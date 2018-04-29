@@ -8,10 +8,11 @@ parser = argparse.ArgumentParser()
 parser.add_argument('-t', '--trunclen', type=int, metavar='trunclen')
 args = parser.parse_args()
 
-if hasattr(args, 'trunclen'):
+if args.trunclen is not None:
     trunclen = args.trunclen
 else:
     trunclen = 25
+
 try:
     session_bus = dbus.SessionBus()
     spotify_bus = session_bus.get_object("org.mpris.MediaPlayer2.spotify", "/org/mpris/MediaPlayer2")
