@@ -1,5 +1,6 @@
 #!/bin/python
 
+import sys
 import dbus
 import argparse
 
@@ -30,7 +31,12 @@ try:
         if ('(' in song) and (')' not in song):
             song += ')'
     output = artist + ': ' + song
-    print(output.encode('utf-8'))
+    
+    # Python3 uses UTF-8 by default. 
+    if sys.version_info.major == 3:
+        print(output)
+    else:
+        print(output.encode('UTF-8'))
 except Exception as e:
     if isinstance(e, dbus.exceptions.DBusException):
         print("")
