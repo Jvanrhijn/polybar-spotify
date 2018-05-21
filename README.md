@@ -15,10 +15,31 @@ type = custom/script
 interval = 1
 format-prefix = " "
 format = <label>
-exec = python /path/to/spotify/script -t 42
-
+exec = python /path/to/spotify/script
 format-underline = #1db954
 ~~~
 
-The argument "-t" is optional and sets the `trunlen`. 
- 
+#### Custom arguments
+
+##### Truncate
+
+The argument "-t" is optional and sets the `trunlen`. It specifies the maximum length of the song name, so that it gets truncated when the specified length is exceeded. Defaults to 25.
+
+Override example:
+
+~~~ ini
+exec = python /path/to/spotify/script -t 42
+~~~
+
+##### Format
+
+The argument "-f" is optional and sets the format. You can specify how to display the song and the artist's name. Useful if you want to swap the positions.
+
+Override example:
+
+~~~ ini
+exec = python /path/to/spotify/script -f '{song} - {artist}'
+~~~
+
+This would output "Lone Digger - Caravan Palace" in your polybar, instead of what is shown in the screenshot.
+
