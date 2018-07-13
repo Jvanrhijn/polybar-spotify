@@ -19,6 +19,21 @@ parser.add_argument(
     metavar='custom format',
     dest='custom_format'
 )
+parser.add_argument(
+    '-s',
+    '--saved',
+    type=str,
+    metavar='saved icon',
+    dest='saved_icon'
+)
+parser.add_argument(
+    '-u',
+    '--unsaved',
+    type=str,
+    metavar='unsaved icon',
+    dest='unsaved_icon'
+)
+parser.add_argument('--save', dest='save_track', action='store_true')
 args = parser.parse_args()
 
 # Default parameters
@@ -47,21 +62,37 @@ try:
 
     artist = metadata['xesam:artist'][0]
     song = metadata['xesam:title']
+    if args.save_track:
+        import saved_tracks
+        saved_tracks.save_track(metadata['xesam:url'])
+        sys.exit(0)
+
+    if args.saved_icon:
+        import saved_tracks
+        saved = saved_tracks.track_saved(metadata['xesam:url'])
+        saved_str = args.saved_icon if saved else ''
+        unsaved_str = args.unsaved_icon if not saved else ''
+    else:
+        saved_str = ''
+        unsaved_str = args.unsaved_icon
 
     if len(song) > trunclen:
         song = song[0:trunclen]
-        song += '...' 
+        song += '...'
         if ('(' in song) and (')' not in song):
             song += ')'
-    
-    # Python3 uses UTF-8 by default. 
+
+    # Python3 uses UTF-8 by default.
     if sys.version_info.major == 3:
-        print(output.format(artist=artist, song=song))
+        print(output.format(artist=artist, song=song, saved=saved_str, unsaved=unsaved_str))
     else:
-        print(output.format(artist=artist, song=song).encode('UTF-8'))
+        print(output.format(artist=artist, song=song, saved=saved_str, unsaved=unsaved_str).encode('UTF-8'))
+
 except Exception as e:
     if isinstance(e, dbus.exceptions.DBusException):
         print('')
     else:
         print(e)
-
+        print()
+        import traceback
+        traceback.print_exc()
