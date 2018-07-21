@@ -16,7 +16,7 @@ type = custom/script
 interval = 1
 format-prefix = " "
 format = <label>
-exec = python /path/to/spotify/script
+exec = python /path/to/spotify_status.py
 format-underline = #1db954
 ```
 
@@ -29,7 +29,7 @@ The argument "-t" is optional and sets the `trunlen`. It specifies the maximum l
 Override example:
 
 ``` ini
-exec = python /path/to/spotify/script -t 42
+exec = python /path/to/spotify_status.py -t 42
 ```
 
 ##### Format
@@ -39,7 +39,7 @@ The argument "-f" is optional and sets the format. You can specify how to displa
 Override example:
 
 ``` ini
-exec = python /path/to/spotify/script -f '{song} - {artist}'
+exec = python /path/to/spotify_status.py -f '{song} - {artist}'
 ```
 
 This would output "Lone Digger - Caravan Palace" in your polybar, instead of what is shown in the screenshot.
@@ -51,7 +51,7 @@ This would output "Lone Digger - Caravan Palace" in your polybar, instead of wha
 If the "-s" and "-u" arguments are used, the script will use the Spotify API to determine whether you have saved the current song to your library (i.e. favorited it). With these options, you can have a heart icon display for your favorite songs and a music icon display for others. The argument "-s" specifies the text or icon to use if the song has been saved, and the "-u" options speficies text to use if it is not saved.
 
 ```ini
-exec = python /path/to/spotify/script -f '{saved}{artist}: {song}{unsaved}' -s 's: ' -u ' :u'
+exec = python /path/to/spotify_status.py -f '{saved}{artist}: {song}{unsaved}' -s 's: ' -u ' :u'
 ```
 
 This would output "s: Caravan Palace: Lone Digger" if the song were saved, and "Caravan Palace: Lone Digger :u" if the song were not saved. Note that "{song}" and "{unsaved}" need to be specified in the format option to control where the saved/unsaved text is placed.
@@ -81,6 +81,6 @@ If you would like to make clicking on a song's name toggle whether it is in your
 type = custom/script
 interval = 1
 format = <label>
-exec = python /path/to/spotify/script -f '{saved}{unsaved}{artist}: {song}' -s ' ' -u' '
-click-left = python /path/to/spotify/script --save
+exec = python /path/to/spotify_status.py -f '{saved}{unsaved}{artist}: {song}' -s ' ' -u' '
+click-left = python /path/to/spotify_status.py --save
 ```
