@@ -5,7 +5,7 @@ This is a module that shows the current song playing and its primary artist on S
 ### Dependencies
 - Python (2.x or 3.x)
 - Python `dbus` module
-- Python `spotipy` module (optional)
+- Python `spotipy` module (optional; only needed for liked songs functionality)
 
 [![sample screenshot](https://i.imgur.com/kEluTSq.png)](https://i.imgur.com/kEluTSq.png)
 
@@ -48,7 +48,7 @@ This would output "Lone Digger - Caravan Palace" in your polybar, instead of wha
 
 [<img src="https://i.imgur.com/QyUzhAM.png" width="350" alt="A saved song"/>](https://i.imgur.com/QyUzhAM.png)
 
-If the "-s" and "-u" arguments are used, the script will use the Spotify API to determine whether you have saved the current song to your library (i.e. favorited it). The argument "-s" specifies the text or icon to use if the song has been saved, and the "-u" options speficies text to use if it is not saved.
+If the "-s" and "-u" arguments are used, the script will use the Spotify API to determine whether you have saved the current song to your library (i.e. favorited it). With these options, you can have a heart icon display for your favorite songs and a music icon display for others. The argument "-s" specifies the text or icon to use if the song has been saved, and the "-u" options speficies text to use if it is not saved.
 
 ```ini
 exec = python /path/to/spotify/script -f '{saved}{artist}: {song}{unsaved}' -s 's: ' -u ' :u'
@@ -60,7 +60,7 @@ In order to use the Spotify API, you'll need a client ID and client secret from 
 
 [![Spotify Developers page](https://i.imgur.com/36pB6q0.png)](https://i.imgur.com/36pB6q0.png)
 
-Once generated, the credentials need to be specified in ``/.config/spotify/barconfig.cfg` as such:
+Once generated, the credentials need to be specified in `/.config/spotify/barconfig.cfg` as such:
 
 ```ini
 [authorization]
@@ -74,13 +74,13 @@ You'll also need to add the redirect uri `http://localhost` to the list of redir
 
 After specifying the config, manually run `spotify_status` with the `-s` option to authenticate the script with the Spotify API.
 
-If you would like to make clicking on the song name toggle whether or not it is in your library, you can set the `click-left` property as such:
+If you would like to make clicking on a song's name toggle whether it is in your library, you can set the `click-left` property as such:
 
 ```ini
 [module/spotify]
 type = custom/script
 interval = 1
 format = <label>
-exec = python /path/to/spotify_status.py -f '{saved}{unsaved}{artist}: {song}' -s ' ' -u' '
-click-left = python /path/to/spotify_status.py --save
+exec = python /path/to/spotify/script -f '{saved}{unsaved}{artist}: {song}' -s ' ' -u' '
+click-left = python /path/to/spotify/script --save
 ```
