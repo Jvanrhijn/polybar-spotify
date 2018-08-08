@@ -15,7 +15,7 @@ type = custom/script
 interval = 1
 format-prefix = " "
 format = <label>
-exec = python /path/to/spotify/script
+exec = python /path/to/spotify/script -f '{artist}: {song}'
 format-underline = #1db954
 ~~~
 
@@ -33,13 +33,22 @@ exec = python /path/to/spotify/script -t 42
 
 ##### Format
 
-The argument "-f" is optional and sets the format. You can specify how to display the song and the artist's name. Useful if you want to swap the positions.
+The argument "-f" is optional and sets the format. You can specify how to display the song and the artist's name, as well as where (or whether) to print the play-pause indicator. 
 
 Override example:
 
 ~~~ ini
-exec = python /path/to/spotify/script -f '{song} - {artist}'
+exec = python /path/to/spotify/script -f '{play_pause} {song} - {artist}'
 ~~~
 
 This would output "Lone Digger - Caravan Palace" in your polybar, instead of what is shown in the screenshot.
 
+##### Status indicator
+
+The argument "-p" is optional, and sets which unicode symbols to use for the status indicator. These should be given as a comma-separated string, with the play indicator as the first value and the pause indicator as the second.
+
+Override example:
+
+~~~ ini
+exec = python /path/to/spotify/script -p '[playing],[paused]'
+~~~

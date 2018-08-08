@@ -19,17 +19,28 @@ parser.add_argument(
     metavar='custom format',
     dest='custom_format'
 )
+parser.add_argument(
+    '-p',
+    '--playpause',
+    type=str,
+    metavar='play-pause indicator',
+    dest='play_pause'
+)
+
 args = parser.parse_args()
 
 # Default parameters
-output = '{artist}: {song}'
+output = '{play_pause} {artist}: {song}'
 trunclen = 25
+play_pause = u'\u25B6,\u23F8' # first character is play, second is paused
 
 # parameters can be overwritten by args
 if args.trunclen is not None:
     trunclen = args.trunclen
 if args.custom_format is not None:
     output = args.custom_format
+if args.play_pause is not None:
+    play_pause = args.play_pause
 
 try:
     session_bus = dbus.SessionBus()
@@ -44,6 +55,15 @@ try:
     )
 
     metadata = spotify_properties.Get('org.mpris.MediaPlayer2.Player', 'Metadata')
+    status = spotify_properties.Get('org.mpris.MediaPlayer2.Player', 'PlaybackStatus')
+
+    play_pause = play_pause.split(',')
+    if status == 'Playing':
+        play_pause = play_pause[0]
+    elif status == 'Paused':
+        play_pause = play_pause[1]
+    else:
+        play_pause = str()
 
     artist = metadata['xesam:artist'][0]
     song = metadata['xesam:title']
@@ -56,9 +76,9 @@ try:
     
     # Python3 uses UTF-8 by default. 
     if sys.version_info.major == 3:
-        print(output.format(artist=artist, song=song))
+        print(output.format(artist=artist, song=song, play_pause=play_pause))
     else:
-        print(output.format(artist=artist, song=song).encode('UTF-8'))
+        print(output.format(artist=artist, song=song, play_pause=play_pause).encode('UTF-8'))
 except Exception as e:
     if isinstance(e, dbus.exceptions.DBusException):
         print('')
