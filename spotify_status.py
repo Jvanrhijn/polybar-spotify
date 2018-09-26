@@ -29,10 +29,17 @@ parser.add_argument(
 
 args = parser.parse_args()
 
+def fix_string(string):
+    # corrects encoding for the python version used
+    if sys.version_info.major == 3:
+        return string
+    else:
+        return string.encode('utf-8')
+
 # Default parameters
-output = u'{play_pause} {artist}: {song}'
+output = fix_string(u'{play_pause} {artist}: {song}')
 trunclen = 25
-play_pause = u'\u25B6,\u23F8' # first character is play, second is paused
+play_pause = fix_string(u'\u25B6,\u23F8') # first character is play, second is paused
 
 # parameters can be overwritten by args
 if args.trunclen is not None:
@@ -58,6 +65,7 @@ try:
     status = spotify_properties.Get('org.mpris.MediaPlayer2.Player', 'PlaybackStatus')
 
     play_pause = play_pause.split(',')
+
     if status == 'Playing':
         play_pause = play_pause[0]
     elif status == 'Paused':
@@ -65,8 +73,8 @@ try:
     else:
         play_pause = str()
 
-    artist = metadata['xesam:artist'][0]
-    song = metadata['xesam:title']
+    artist = fix_string(metadata['xesam:artist'][0])
+    song = fix_string(metadata['xesam:title'])
 
     if len(song) > trunclen:
         song = song[0:trunclen]
@@ -74,11 +82,8 @@ try:
         if ('(' in song) and (')' not in song):
             song += ')'
     
-    # Python3 uses UTF-8 by default. 
-    if sys.version_info.major == 3:
-        print(output.format(artist=artist, song=song, play_pause=play_pause))
-    else:
-        print(output.format(artist=artist, song=song, play_pause=play_pause).encode('UTF-8'))
+    print(output.format(artist=artist, song=song, play_pause=play_pause))
+
 except Exception as e:
     if isinstance(e, dbus.exceptions.DBusException):
         print('')
