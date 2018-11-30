@@ -9,7 +9,7 @@ This is a module that shows the current song playing and its primary artist on S
 [![sample screenshot](https://i.imgur.com/kEluTSq.png)](https://i.imgur.com/kEluTSq.png)
 
 ### Settings
-~~~ ini
+``` ini
 [module/spotify]
 type = custom/script
 interval = 1
@@ -17,7 +17,7 @@ format-prefix = " "
 format = <label>
 exec = python /path/to/spotify/script -f '{artist}: {song}'
 format-underline = #1db954
-~~~
+```
 
 #### Custom arguments
 
@@ -27,9 +27,9 @@ The argument "-t" is optional and sets the `trunlen`. It specifies the maximum l
 
 Override example:
 
-~~~ ini
+``` ini
 exec = python /path/to/spotify/script -t 42
-~~~
+```
 
 ##### Format
 
@@ -37,9 +37,9 @@ The argument "-f" is optional and sets the format. You can specify how to displa
 
 Override example:
 
-~~~ ini
+``` ini
 exec = python /path/to/spotify/script -f '{play_pause} {song} - {artist}'
-~~~
+```
 
 This would output "Lone Digger - Caravan Palace" in your polybar, instead of what is shown in the screenshot.
 
@@ -49,6 +49,22 @@ The argument "-p" is optional, and sets which unicode symbols to use for the sta
 
 Override example:
 
-~~~ ini
+``` ini
 exec = python /path/to/spotify/script -p '[playing],[paused]'
-~~~
+```
+
+##### Fonts
+
+The argument "--font" is optional, and allow to specify which font from your Polybar config to use to display the main label.
+
+Override example:
+```ini
+exec = python /path/to/spotify/script --font=1
+```
+
+The argument "--playpause-font" is optional, and allow to specify which font from your Polybar config to use to display the "play/pause" indicator.
+
+Override example:
+``` ini
+exec = python /path/to/spotify/script -p '[playing],[paused]' --playpause-font=2
+```
