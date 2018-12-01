@@ -26,6 +26,19 @@ parser.add_argument(
     metavar='play-pause indicator',
     dest='play_pause'
 )
+parser.add_argument(
+    '--font',
+    type=str,
+    metavar='the index of the font to use for the main label',
+    dest='font'
+)
+parser.add_argument(
+    '--playpause-font',
+    type=str,
+    metavar='the index of the font to use to display the playpause indicator',
+    dest='play_pause_font'
+)
+
 
 args = parser.parse_args()
 
@@ -40,6 +53,10 @@ def fix_string(string):
 output = fix_string(u'{play_pause} {artist}: {song}')
 trunclen = 25
 play_pause = fix_string(u'\u25B6,\u23F8') # first character is play, second is paused
+
+label_with_font = '%{{T{font}}}{label}%{{T-}}'
+font = args.font
+play_pause_font = args.play_pause_font
 
 # parameters can be overwritten by args
 if args.trunclen is not None:
@@ -64,6 +81,8 @@ try:
     metadata = spotify_properties.Get('org.mpris.MediaPlayer2.Player', 'Metadata')
     status = spotify_properties.Get('org.mpris.MediaPlayer2.Player', 'PlaybackStatus')
 
+    # Handle play/pause label
+
     play_pause = play_pause.split(',')
 
     if status == 'Playing':
@@ -73,20 +92,31 @@ try:
     else:
         play_pause = str()
 
-    artist = fix_string(metadata['xesam:artist'][0])
-    song = fix_string(metadata['xesam:title'])
+    if play_pause_font:
+        play_pause = label_with_font.format(font=play_pause_font, label=play_pause)
 
-    if len(song) > trunclen:
-        song = song[0:trunclen]
-        song += '...' 
-        if ('(' in song) and (')' not in song):
-            song += ')'
-    
-    print(output.format(artist=artist, song=song, play_pause=play_pause))
+    # Handle main label
+
+    artist = fix_string(metadata['xesam:artist'][0]) if metadata['xesam:artist'] else ''
+    song = fix_string(metadata['xesam:title']) if metadata['xesam:title'] else ''
+
+    if not artist and not song:
+        print('')
+    else:
+        if len(song) > trunclen:
+            song = song[0:trunclen]
+            song += '...'
+            if ('(' in song) and (')' not in song):
+                song += ')'
+
+        if font:
+            artist = label_with_font.format(font=font, label=artist)
+            song = label_with_font.format(font=font, label=song)
+
+        print(output.format(artist=artist, song=song, play_pause=play_pause))
 
 except Exception as e:
     if isinstance(e, dbus.exceptions.DBusException):
         print('')
     else:
         print(e)
-
