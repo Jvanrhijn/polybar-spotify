@@ -4,7 +4,6 @@ import sys
 import dbus
 import argparse
 
-
 parser = argparse.ArgumentParser()
 parser.add_argument(
     '-t',
@@ -99,8 +98,9 @@ try:
 
     artist = fix_string(metadata['xesam:artist'][0]) if metadata['xesam:artist'] else ''
     song = fix_string(metadata['xesam:title']) if metadata['xesam:title'] else ''
+    album = fix_string(metadata['xesam:album']) if metadata['xesam:album'] else ''
 
-    if not artist and not song:
+    if not artist and not song and not album:
         print('')
     else:
         if len(song) > trunclen:
@@ -112,8 +112,9 @@ try:
         if font:
             artist = label_with_font.format(font=font, label=artist)
             song = label_with_font.format(font=font, label=song)
+            album = label_with_font.format(font=font, label=album)
 
-        print(output.format(artist=artist, song=song, play_pause=play_pause))
+        print(output.format(artist=artist, song=song, play_pause=play_pause, album=album))
 
 except Exception as e:
     if isinstance(e, dbus.exceptions.DBusException):
