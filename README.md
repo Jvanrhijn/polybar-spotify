@@ -38,7 +38,7 @@ The argument "-f" is optional and sets the format. You can specify how to displa
 Override example:
 
 ``` ini
-exec = python /path/to/spotify/script -f '{play_pause} {song} - {artist}'
+exec = python /path/to/spotify/script -f '{play_pause} {song} - {artist} - {album}'
 ```
 
 This would output "Lone Digger - Caravan Palace" in your polybar, instead of what is shown in the screenshot.
