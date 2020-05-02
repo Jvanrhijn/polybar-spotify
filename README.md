@@ -23,7 +23,7 @@ format-underline = #1db954
 
 ##### Truncate
 
-The argument "-t" is optional and sets the `trunlen`. It specifies the maximum length of the song name, so that it gets truncated when the specified length is exceeded. Defaults to 25.
+The argument "-t" is optional and sets the `trunlen`. It specifies the maximum length of the printed string, so that it gets truncated when the specified length is exceeded. Defaults to 35.
 
 Override example:
 

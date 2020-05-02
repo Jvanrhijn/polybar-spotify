@@ -62,7 +62,7 @@ def truncate(name, trunclen):
 
 # Default parameters
 output = fix_string(u'{play_pause} {artist}: {song}')
-trunclen = 25
+trunclen = 35
 play_pause = fix_string(u'\u25B6,\u23F8') # first character is play, second is paused
 
 label_with_font = '%{{T{font}}}{label}%{{T-}}'
@@ -120,11 +120,11 @@ try:
             song = label_with_font.format(font=font, label=song)
             album = label_with_font.format(font=font, label=album)
 
-        # Add 2 to trunclen to account for status symbol and space
+        # Add 4 to trunclen to account for status symbol, spaces, and other padding characters
         print(truncate(output.format(artist=artist, 
                                      song=song, 
                                      play_pause=play_pause, 
-                                     album=album), trunclen + 2))
+                                     album=album), trunclen + 4))
 
 except Exception as e:
     if isinstance(e, dbus.exceptions.DBusException):
