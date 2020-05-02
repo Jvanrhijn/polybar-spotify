@@ -41,12 +41,24 @@ parser.add_argument(
 
 args = parser.parse_args()
 
+
 def fix_string(string):
     # corrects encoding for the python version used
     if sys.version_info.major == 3:
         return string
     else:
         return string.encode('utf-8')
+
+
+def truncate(name, trunclen):
+    if len(name) > trunclen:
+        name = name[:trunclen]
+        name += '...'
+        if ('(' in name) and (')' not in name):
+            name += ')'
+    return name
+
+
 
 # Default parameters
 output = fix_string(u'{play_pause} {artist}: {song}')
@@ -103,18 +115,16 @@ try:
     if not artist and not song and not album:
         print('')
     else:
-        if len(song) > trunclen:
-            song = song[0:trunclen]
-            song += '...'
-            if ('(' in song) and (')' not in song):
-                song += ')'
-
         if font:
             artist = label_with_font.format(font=font, label=artist)
             song = label_with_font.format(font=font, label=song)
             album = label_with_font.format(font=font, label=album)
 
-        print(output.format(artist=artist, song=song, play_pause=play_pause, album=album))
+        # Add 2 to trunclen to account for status symbol and space
+        print(truncate(output.format(artist=artist, 
+                                     song=song, 
+                                     play_pause=play_pause, 
+                                     album=album), trunclen + 2))
 
 except Exception as e:
     if isinstance(e, dbus.exceptions.DBusException):
