@@ -37,7 +37,13 @@ parser.add_argument(
     metavar='the index of the font to use to display the playpause indicator',
     dest='play_pause_font'
 )
-
+parser.add_argument(
+    '-q',
+    '--quiet',
+    action='store_true',
+    help="if set, don't show any output when the current song is paused",
+    dest='quiet',
+)
 
 args = parser.parse_args()
 
@@ -68,6 +74,8 @@ play_pause = fix_string(u'\u25B6,\u23F8') # first character is play, second is p
 label_with_font = '%{{T{font}}}{label}%{{T-}}'
 font = args.font
 play_pause_font = args.play_pause_font
+
+quiet = args.quiet
 
 # parameters can be overwritten by args
 if args.trunclen is not None:
@@ -112,7 +120,7 @@ try:
     song = fix_string(metadata['xesam:title']) if metadata['xesam:title'] else ''
     album = fix_string(metadata['xesam:album']) if metadata['xesam:album'] else ''
 
-    if not artist and not song and not album:
+    if (quiet and status == 'Paused') or (not artist and not song and not album):
         print('')
     else:
         if font:

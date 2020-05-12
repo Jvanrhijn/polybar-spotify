@@ -68,3 +68,14 @@ Override example:
 ``` ini
 exec = python /path/to/spotify/script -p '[playing],[paused]' --playpause-font=2
 ```
+
+##### Quiet
+
+The argument "-q" or "--quiet" is optional and specifies whether to display the output when the current song is paused.
+This will make polybar only show a song title and artist (or whatever your custom format is) when the song is actually playing and not when it's paused.
+Simply setting the flag on the comand line will enable this option.
+
+Override example:
+```ini
+exec = python /path/to/spotify/script -q
+```
