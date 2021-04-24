@@ -122,7 +122,7 @@ def scroller(name, song, play_pause, scroll_text, trunclen):
                     text_head = name[marker1:len(name)]
                
                 if (marker1 >= len(name)):
-                    transition_char = marker3*"<" + " "
+                    transition_char = " " + marker3*"<" + " "
                     text_tail = name[0:marker2]
                     #marker2 = marker2+1
                     marker3 = marker3-1
