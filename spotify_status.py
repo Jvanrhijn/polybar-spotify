@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import time 
+
 import sys
 import dbus
 import argparse
@@ -44,6 +46,14 @@ parser.add_argument(
     help="if set, don't show any output when the current song is paused",
     dest='quiet',
 )
+parser.add_argument(
+    '-s',
+    '--scroll',
+    action='store_true',
+    help="if set, scrolls the text",
+    dest='scroll_text',
+)
+
 
 args = parser.parse_args()
 
@@ -58,24 +68,76 @@ def fix_string(string):
 
 def truncate(name, trunclen):
     if len(name) > trunclen:
+        scroll = 1
         name = name[:trunclen]
         name += '...'
         if ('(' in name) and (')' not in name):
             name += ')'
     return name
 
+def scroller(name, song, play_pause, scroll_text, trunclen):
+    current_state = spotify_properties.Get('org.mpris.MediaPlayer2.Player', 'PlaybackStatus')
 
+    if (scroll_text == False or 
+            len(name) <= trunclen or 
+            current_state == 'Paused'):
+        while(True):
+            metadata = spotify_properties.Get('org.mpris.MediaPlayer2.Player', 'Metadata')
+            song_actual = fix_string(metadata['xesam:title']) if metadata['xesam:title'] else ''
+            
+            # call again the script if the song changes
+            if (song != song_actual):
+                return False
+            
+            # If the song is playing again and scrolling is activated, then change
+            if (current_state != spotify_properties.Get('org.mpris.MediaPlayer2.Player', 'PlaybackStatus')):
+                return False
+            
+            # If the scroll is desactivated
+            if (len(name) > trunclen):
+                name = name[:trunclen]
+                name += '...'
+                if ('(' in name) and (')' not in name):
+                    name += ')'
+            
+            print(play_pause, name, sep=' ')
+            time.sleep(0.25) 
+    else:
+        #for k in range(len(name)):
+        marker = 0
+        while(True):    
+            if (spotify_properties.Get('org.mpris.MediaPlayer2.Player', 'PlaybackStatus') == 'Paused'):
+                return False
+            else:
+                metadata = spotify_properties.Get('org.mpris.MediaPlayer2.Player', 'Metadata')
+                song_actual = fix_string(metadata['xesam:title']) if metadata['xesam:title'] else ''
+            
+                if (song != song_actual):
+                    return False
+            
+                text_head = name[marker:trunclen]
+                text_tail = name[0:marker]
+                print(play_pause, text_head, text_tail, sep=' ')
+
+                marker = marker+1
+
+                if (marker == trunclen):
+                    marker = 0
+
+                time.sleep(0.25) 
 
 # Default parameters
 output = fix_string(u'{play_pause} {artist}: {song}')
 trunclen = 35
 play_pause = fix_string(u'\u25B6,\u23F8') # first character is play, second is paused
+scroll = 0
 
 label_with_font = '%{{T{font}}}{label}%{{T-}}'
 font = args.font
 play_pause_font = args.play_pause_font
 
 quiet = args.quiet
+scroll_text = args.scroll_text
 
 # parameters can be overwritten by args
 if args.trunclen is not None:
@@ -127,12 +189,12 @@ try:
             artist = label_with_font.format(font=font, label=artist)
             song = label_with_font.format(font=font, label=song)
             album = label_with_font.format(font=font, label=album)
-
-        # Add 4 to trunclen to account for status symbol, spaces, and other padding characters
-        print(truncate(output.format(artist=artist, 
-                                     song=song, 
-                                     play_pause=play_pause, 
-                                     album=album), trunclen + 4))
+    
+    name = output.format(artist=artist, 
+            song=song,
+            album=album)
+ 
+    scroller(name, song, play_pause, scroll_text, trunclen + 4) 
 
 except Exception as e:
     if isinstance(e, dbus.exceptions.DBusException):
