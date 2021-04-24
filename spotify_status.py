@@ -102,7 +102,6 @@ def scroller(name, song, play_pause, scroll_text, trunclen):
             print(play_pause, name, sep=' ')
             time.sleep(0.25) 
     else:
-        #for k in range(len(name)):
         marker1 = 0
         marker2 = 1
         marker3 = 2
@@ -124,7 +123,6 @@ def scroller(name, song, play_pause, scroll_text, trunclen):
                 if (marker1 >= len(name)):
                     transition_char = " " + marker3*"<" + " "
                     text_tail = name[0:marker2]
-                    #marker2 = marker2+1
                     marker3 = marker3-1
 
                     print(play_pause, transition_char, text_tail, sep='')
