@@ -79,3 +79,12 @@ Override example:
 ```ini
 exec = python /path/to/spotify/script -q
 ```
+
+##### Scroll
+
+The argument "-s" or "--scroll" is optional, allows scrolling of the text when the specified length is exceeded.
+
+Override example:
+```ini
+exec = python /path/to/spotify/script -s
+```
