@@ -65,7 +65,6 @@ def fix_string(string):
     else:
         return string.encode('utf-8')
 
-
 def truncate(name, trunclen):
     if len(name) > trunclen:
         scroll = 1
@@ -104,7 +103,9 @@ def scroller(name, song, play_pause, scroll_text, trunclen):
             time.sleep(0.25) 
     else:
         #for k in range(len(name)):
-        marker = 0
+        marker1 = 0
+        marker2 = 1
+        marker3 = 2
         while(True):    
             if (spotify_properties.Get('org.mpris.MediaPlayer2.Player', 'PlaybackStatus') == 'Paused'):
                 return False
@@ -115,14 +116,34 @@ def scroller(name, song, play_pause, scroll_text, trunclen):
                 if (song != song_actual):
                     return False
             
-                text_head = name[marker:trunclen]
-                text_tail = name[0:marker]
-                print(play_pause, text_head, text_tail, sep=' ')
+                if (marker1+trunclen <= len(name)):
+                    text_head = name[marker1:trunclen+marker1]
+                else:
+                    text_head = name[marker1:len(name)]
+               
+                if (marker1 >= len(name)):
+                    transition_char = marker3*"<" + " "
+                    text_tail = name[0:marker2]
+                    #marker2 = marker2+1
+                    marker3 = marker3-1
 
-                marker = marker+1
+                    print(play_pause, transition_char, text_tail, sep='')
+                elif (abs(marker1-len(name)) < trunclen):
+                    text_tail = name[0:marker2]
+                    marker2 = marker2+1
 
-                if (marker == trunclen):
-                    marker = 0
+                    print(play_pause, text_head, "<<" ,text_tail, sep=' ')
+                else:
+                    text_tail = ''
+                    
+                    print(play_pause, text_head, sep=' ')
+
+                marker1 = marker1+1
+
+                if (marker1 == len(name)+2):
+                    marker1 = 0
+                    marker2 = 1
+                    marker3 = 2
 
                 time.sleep(0.25) 
 
@@ -130,7 +151,6 @@ def scroller(name, song, play_pause, scroll_text, trunclen):
 output = fix_string(u'{play_pause} {artist}: {song}')
 trunclen = 35
 play_pause = fix_string(u'\u25B6,\u23F8') # first character is play, second is paused
-scroll = 0
 
 label_with_font = '%{{T{font}}}{label}%{{T-}}'
 font = args.font
