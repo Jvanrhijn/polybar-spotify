@@ -8,7 +8,7 @@ This is a module that shows the current song playing and its primary artist on S
 
 [![sample screenshot](https://i.imgur.com/kEluTSq.png)](https://i.imgur.com/kEluTSq.png)
 
-![Alt Text](https://media.giphy.com/media/MuHf8ir8AIwB7fKmak/giphy.gif)
+![Alt Text](https://media.giphy.com/media/ICKAWm1sivhMCRvFHq/giphy.gif)
 
 ### Settings
 ``` ini
