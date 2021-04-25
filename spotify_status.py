@@ -102,9 +102,8 @@ def scroller(name, song, play_pause, scroll_text, trunclen):
             print(play_pause, name, sep=' ')
             time.sleep(0.25) 
     else:
-        marker1 = 0
-        marker2 = 1
-        marker3 = 2
+        marker = 0
+        marker_tc = 0
         while(True):    
             if (spotify_properties.Get('org.mpris.MediaPlayer2.Player', 'PlaybackStatus') == 'Paused'):
                 return False
@@ -114,34 +113,41 @@ def scroller(name, song, play_pause, scroll_text, trunclen):
             
                 if (song != song_actual):
                     return False
-            
-                if (marker1+trunclen <= len(name)):
-                    text_head = name[marker1:trunclen+marker1]
-                else:
-                    text_head = name[marker1:len(name)]
-               
-                if (marker1 >= len(name)):
-                    transition_char = " " + marker3*"<" + " "
-                    text_tail = name[0:marker2]
-                    marker3 = marker3-1
+             
+                transition_char = " " + marker_tc*"<" + " "
+                
+                if (marker >= len(name)):
+                    text_tail = name[0:trunclen-len(transition_char)]
+                    marker_tc = marker_tc-1
 
                     print(play_pause, transition_char, text_tail, sep='')
-                elif (abs(marker1-len(name)) < trunclen):
-                    text_tail = name[0:marker2]
-                    marker2 = marker2+1
-
-                    print(play_pause, text_head, "<<" ,text_tail, sep=' ')
                 else:
-                    text_tail = ''
+                    if (marker+trunclen < len(name)):
+                        text_head = name[marker:trunclen+marker]
+                    else:
+                        text_head = name[marker:len(name)]
+               
+                    if (abs(marker-len(name)) < trunclen):
+                        tail_chars_num = trunclen-abs(marker-len(name))-len(transition_char)
+                        if (tail_chars_num <= 0):
+                            text_tail = ''
+                        else:
+                            text_tail = name[0:abs(trunclen-abs(marker-len(name)-len(transition_char)))]
+
+                        print(play_pause, text_head, transition_char, text_tail, sep='')
+
+                        if (marker_tc < 2):
+                            marker_tc = marker_tc+1
+                    else:
+                        text_tail = ''
                     
-                    print(play_pause, text_head, sep=' ')
+                        print(play_pause, text_head, sep=' ')
 
-                marker1 = marker1+1
+                marker = marker+1
 
-                if (marker1 == len(name)+2):
-                    marker1 = 0
-                    marker2 = 1
-                    marker3 = 2
+                if (marker == len(name)+2):
+                    marker = 0
+                    marker_tc = 0
 
                 time.sleep(0.25) 
 
