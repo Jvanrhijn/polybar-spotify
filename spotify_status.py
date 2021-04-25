@@ -145,7 +145,7 @@ def scroller(name, song, play_pause, scroll_text, trunclen):
 
                 marker = marker+1
 
-                if (marker == len(name)+2):
+                if (marker == len(name)+3):
                     marker = 0
                     marker_tc = 0
 
