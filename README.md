@@ -2,9 +2,14 @@
 
 This is a module that shows the current song playing and its primary artist on Spotify, with a Spotify-green underline, for people that don't want to set up mpd. If Spotify is not active, nothing is shown. If the song name is longer than `trunclen` characers (default 25), it is truncated and `...` is appended. If the song is truncated and contains a single opening parenthesis, the closing paranethsis is appended as well.
 
+(optional)
+
+You can add if you can control players inside module for each mouse key (left, right, middle).
+
 ### Dependencies
 - Python (2.x or 3.x)
 - Python `dbus` module
+- playerctl
 
 [![sample screenshot](https://i.imgur.com/kEluTSq.png)](https://i.imgur.com/kEluTSq.png)
 
@@ -17,6 +22,10 @@ format-prefix = " "
 format = <label>
 exec = python /path/to/spotify/script -f '{artist}: {song}'
 format-underline = #1db954
+;control players (optional)
+click-left = playerctl --player=spotify play-pause 
+click-right = playerctl --player=spotify next 
+click-middle = playerctl --player=spotify previous 
 ```
 
 #### Custom arguments
