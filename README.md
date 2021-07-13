@@ -2,9 +2,9 @@
 
 This is a module that shows the current song playing and its primary artist on Spotify, with a Spotify-green underline, for people that don't want to set up mpd. If Spotify is not active, nothing is shown. If the song name is longer than `trunclen` characers (default 25), it is truncated and `...` is appended. If the song is truncated and contains a single opening parenthesis, the closing paranethsis is appended as well.
 
-(optional)
+### Controls
 
-You can add if you can control players inside module for each mouse key (left, right, middle).
+You can add mouse controls for the player inside the module, as well. The configuration shown below uses mouse-1 for play-pause, mouse-2 for next, and mouse-3 for previous.
 
 ### Dependencies
 - Python (2.x or 3.x)
