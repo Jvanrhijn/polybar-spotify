@@ -8,7 +8,7 @@ You can add mouse controls for the player inside the module, as well. The config
 
 ### Dependencies
 - Python (2.x or 3.x)
-- Python `dbus` module
+- Python [`dbus`](https://pypi.org/project/dbus-python/) module
 - playerctl
 
 [![sample screenshot](https://i.imgur.com/kEluTSq.png)](https://i.imgur.com/kEluTSq.png)
