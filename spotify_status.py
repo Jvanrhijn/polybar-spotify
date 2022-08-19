@@ -4,57 +4,12 @@ import sys
 import dbus
 import argparse
 
-parser = argparse.ArgumentParser()
-parser.add_argument(
-    '-t',
-    '--trunclen',
-    type=int,
-    metavar='trunclen'
-)
-parser.add_argument(
-    '-f',
-    '--format',
-    type=str,
-    metavar='custom format',
-    dest='custom_format'
-)
-parser.add_argument(
-    '-p',
-    '--playpause',
-    type=str,
-    metavar='play-pause indicator',
-    dest='play_pause'
-)
-parser.add_argument(
-    '--font',
-    type=str,
-    metavar='the index of the font to use for the main label',
-    dest='font'
-)
-parser.add_argument(
-    '--playpause-font',
-    type=str,
-    metavar='the index of the font to use to display the playpause indicator',
-    dest='play_pause_font'
-)
-parser.add_argument(
-    '-q',
-    '--quiet',
-    action='store_true',
-    help="if set, don't show any output when the current song is paused",
-    dest='quiet',
-)
-
-args = parser.parse_args()
-
-
 def fix_string(string):
     # corrects encoding for the python version used
     if sys.version_info.major == 3:
         return string
     else:
         return string.encode('utf-8')
-
 
 def truncate(name, trunclen):
     if len(name) > trunclen:
@@ -64,26 +19,70 @@ def truncate(name, trunclen):
             name += ')'
     return name
 
+def parse_commandline():
+    # just looking for command line arguments
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        '-t',
+        '--trunclen',
+        type=int,
+        metavar='length',
+        help='specifies the maximum length of the printed string',
+        default=35
+    )
+    parser.add_argument(
+        '-f',
+        '--format',
+        type=str,
+        metavar="'format'",
+        help="specifies whether and how to display the song, the artist's name and the play-pause indicator",
+        default=fix_string(u'{play_pause} {artist}: {song}'),
+        dest='format'
+    )
+    parser.add_argument(
+        '-p',
+        '--playpause',
+        type=str,
+        metavar="'<playing>,<paused>'",
+        help='set which unicode symbols to use for the status indicator',
+        default=fix_string(u'\u25B6,\u23F8'), # first character is play, second is paused
+        dest='play_pause'
+    )
+    parser.add_argument(
+        '--font',
+        type=str,
+        metavar='font_id',
+        help='the index of the font from your Polybar config to use for the main label',
+        dest='font'
+    )
+    parser.add_argument(
+        '--playpause-font',
+        type=str,
+        metavar='font_id',
+        help='the index of the font from your Polybar config to use to display the play-pause indicator',
+        dest='play_pause_font'
+    )
+    parser.add_argument(
+        '-q',
+        '--quiet',
+        action='store_true',
+        help="if set, don't show any output when the current song is paused",
+        dest='quiet',
+    )
+    return parser.parse_args()
 
 
-# Default parameters
-output = fix_string(u'{play_pause} {artist}: {song}')
-trunclen = 35
-play_pause = fix_string(u'\u25B6,\u23F8') # first character is play, second is paused
+args = parse_commandline()
+
+output = args.format
+trunclen = args.trunclen
+play_pause = args.play_pause
 
 label_with_font = '%{{T{font}}}{label}%{{T-}}'
 font = args.font
 play_pause_font = args.play_pause_font
 
 quiet = args.quiet
-
-# parameters can be overwritten by args
-if args.trunclen is not None:
-    trunclen = args.trunclen
-if args.custom_format is not None:
-    output = args.custom_format
-if args.play_pause is not None:
-    play_pause = args.play_pause
 
 try:
     session_bus = dbus.SessionBus()
@@ -129,9 +128,9 @@ try:
             album = label_with_font.format(font=font, label=album)
 
         # Add 4 to trunclen to account for status symbol, spaces, and other padding characters
-        print(truncate(output.format(artist=artist, 
-                                     song=song, 
-                                     play_pause=play_pause, 
+        print(truncate(output.format(artist=artist,
+                                     song=song,
+                                     play_pause=play_pause,
                                      album=album), trunclen + 4))
 
 except Exception as e:
