@@ -3,6 +3,8 @@
 import sys
 import dbus
 import argparse
+from gi.repository import GLib
+from dbus.mainloop.glib import DBusGMainLoop
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
@@ -85,29 +87,40 @@ if args.custom_format is not None:
 if args.play_pause is not None:
     play_pause = args.play_pause
 
-try:
-    session_bus = dbus.SessionBus()
-    spotify_bus = session_bus.get_object(
-        'org.mpris.MediaPlayer2.spotify',
-        '/org/mpris/MediaPlayer2'
-    )
+play_pause_icons = play_pause.split(',')
 
-    spotify_properties = dbus.Interface(
-        spotify_bus,
-        'org.freedesktop.DBus.Properties'
-    )
+last_metadata = None
+last_status = None
 
-    metadata = spotify_properties.Get('org.mpris.MediaPlayer2.Player', 'Metadata')
-    status = spotify_properties.Get('org.mpris.MediaPlayer2.Player', 'PlaybackStatus')
+def query_and_print():
+    global bus
+    try:
+        spotify_bus = bus.get_object(bus_name='org.mpris.MediaPlayer2.spotify',
+                                     object_path='/org/mpris/MediaPlayer2')
+        spotify_properties = dbus.Interface(spotify_bus,
+                                            dbus_interface='org.freedesktop.DBus.Properties')
+        metadata = spotify_properties.Get('org.mpris.MediaPlayer2.Player', 'Metadata')
+        status = spotify_properties.Get('org.mpris.MediaPlayer2.Player', 'PlaybackStatus')
+
+        print_output(metadata, status)
+    except:
+        print('', flush=True)
+
+def print_output(metadata, status):
+    global play_pause_icons
+    global play_pause_font
+    global last_metadata
+    global last_status
+
+    last_metadata = metadata
+    last_status = status
 
     # Handle play/pause label
 
-    play_pause = play_pause.split(',')
-
     if status == 'Playing':
-        play_pause = play_pause[0]
+        play_pause = play_pause_icons[0]
     elif status == 'Paused':
-        play_pause = play_pause[1]
+        play_pause = play_pause_icons[1]
     else:
         play_pause = str()
 
@@ -120,8 +133,10 @@ try:
     song = fix_string(metadata['xesam:title']) if metadata['xesam:title'] else ''
     album = fix_string(metadata['xesam:album']) if metadata['xesam:album'] else ''
 
-    if (quiet and status == 'Paused') or (not artist and not song and not album):
-        print('')
+    if quiet and status == 'Paused':
+        print('', flush=True)
+    elif not artist and not song:
+        query_and_print()
     else:
         if font:
             artist = label_with_font.format(font=font, label=artist)
@@ -129,13 +144,46 @@ try:
             album = label_with_font.format(font=font, label=album)
 
         # Add 4 to trunclen to account for status symbol, spaces, and other padding characters
-        print(truncate(output.format(artist=artist, 
-                                     song=song, 
-                                     play_pause=play_pause, 
-                                     album=album), trunclen + 4))
+        print(truncate(output.format(artist=artist,
+                                     song=song,
+                                     play_pause=play_pause,
+                                     album=album), trunclen + 4), flush=True)
 
-except Exception as e:
-    if isinstance(e, dbus.exceptions.DBusException):
-        print('')
-    else:
-        print(e)
+def signal_handler(*args, **kwargs):
+    global last_metadata
+    global last_status
+    if args[0] == 'org.mpris.MediaPlayer2.Player':
+        metadata = last_metadata
+        status = last_status
+        if 'Metadata' in args[1]:
+            metadata = args[1]['Metadata']
+        if 'PlaybackStatus' in args[1]:
+            status = args[1]['PlaybackStatus']
+        print_output(metadata, status)
+    elif kwargs['sender'] == 'org.freedesktop.DBus' and args[0] == 'org.mpris.MediaPlayer2.spotify':
+        # spotify terminated or started
+        query_and_print()
+
+DBusGMainLoop(set_as_default=True)
+bus = dbus.SessionBus()
+
+# if spotify is running get initial song
+query_and_print()
+
+# spotify signal handler
+bus.add_signal_receiver(signal_handler,
+                        signal_name='PropertiesChanged',
+                        dbus_interface='org.freedesktop.DBus.Properties',
+                        bus_name='org.mpris.MediaPlayer2.spotify',
+                        path='/org/mpris/MediaPlayer2')
+
+# spotify signal handler for termination and starting
+bus.add_signal_receiver(signal_handler,
+                        signal_name='NameOwnerChanged',
+                        dbus_interface='org.freedesktop.DBus',
+                        bus_name='org.freedesktop.DBus',
+                        path='/org/freedesktop/DBus',
+                        sender_keyword='sender')
+
+loop = GLib.MainLoop()
+loop.run()

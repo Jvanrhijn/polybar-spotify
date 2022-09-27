@@ -1,6 +1,6 @@
 # polybar-spotify
 
-This is a module that shows the current song playing and its primary artist on Spotify, with a Spotify-green underline, for people that don't want to set up mpd. If Spotify is not active, nothing is shown. If the song name is longer than `trunclen` characers (default 25), it is truncated and `...` is appended. If the song is truncated and contains a single opening parenthesis, the closing paranethsis is appended as well.
+This is a module that shows the current song playing and its primary artist on Spotify, with a Spotify-green underline, for people that don't want to set up mpd. If Spotify is not active, nothing is shown. If the song name is longer than `trunclen` characers (default 25), it is truncated and `...` is appended. If the song is truncated and contains a single opening parenthesis, the closing paranethsis is appended as well. The module listens for dbus events which is superior to polling for changes in some interval.
 
 ### Controls
 
@@ -9,6 +9,7 @@ You can add mouse controls for the player inside the module, as well. The config
 ### Dependencies
 - Python (2.x or 3.x)
 - Python [`dbus`](https://pypi.org/project/dbus-python/) module
+- Python [`gobject`](https://pypi.org/project/PyGObject/)
 - playerctl
 
 [![sample screenshot](https://i.imgur.com/kEluTSq.png)](https://i.imgur.com/kEluTSq.png)
@@ -17,15 +18,15 @@ You can add mouse controls for the player inside the module, as well. The config
 ``` ini
 [module/spotify]
 type = custom/script
-interval = 1
+tail = true
 format-prefix = " "
 format = <label>
 exec = python /path/to/spotify/script -f '{artist}: {song}'
 format-underline = #1db954
 ;control players (optional)
-click-left = playerctl --player=spotify play-pause 
-click-right = playerctl --player=spotify next 
-click-middle = playerctl --player=spotify previous 
+click-left = playerctl --player=spotify play-pause
+click-right = playerctl --player=spotify next
+click-middle = playerctl --player=spotify previous
 ```
 
 #### Custom arguments
