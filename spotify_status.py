@@ -44,6 +44,13 @@ parser.add_argument(
     help="if set, don't show any output when the current song is paused",
     dest='quiet',
 )
+parser.add_argument(
+    '-i',
+    '--idle',
+    type=str,
+    metavar='the string to show when no player is found, aka idle mode. if not set, there will be no output',
+    dest='idle',
+)
 
 args = parser.parse_args()
 
@@ -76,6 +83,7 @@ font = args.font
 play_pause_font = args.play_pause_font
 
 quiet = args.quiet
+idle = args.idle
 
 # parameters can be overwritten by args
 if args.trunclen is not None:
@@ -129,13 +137,16 @@ try:
             album = label_with_font.format(font=font, label=album)
 
         # Add 4 to trunclen to account for status symbol, spaces, and other padding characters
-        print(truncate(output.format(artist=artist, 
-                                     song=song, 
-                                     play_pause=play_pause, 
+        print(truncate(output.format(artist=artist,
+                                     song=song,
+                                     play_pause=play_pause,
                                      album=album), trunclen + 4))
 
 except Exception as e:
     if isinstance(e, dbus.exceptions.DBusException):
-        print('')
+        if idle:
+            print(idle)
+        else:
+            print('')
     else:
         print(e)
